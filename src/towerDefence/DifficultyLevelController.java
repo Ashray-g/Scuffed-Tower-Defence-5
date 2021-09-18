@@ -3,7 +3,7 @@ package towerDefence;
 public class DifficultyLevelController {
     private static int level = 1;
 
-    private static long moneys = 1000;
+    private static long moneys = Config.initMoney;
 
     public static long getMoneys() {
         return moneys;

@@ -43,20 +43,17 @@ public class SwingControl extends JFrame implements MouseListener {
         swingControl.setSize(Config.width*40, Config.height*40);
         swingControl.setVisible(true);
 
-        swingControl.setName("Scuffed Tower Defense 5");
-        swingControl.setTitle("Scuffed Tower Defense 5");
+        swingControl.setName(Config.gameName);
+        swingControl.setTitle(Config.gameName);
 
         swingControl.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-//        Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
         Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Image image = toolkit.getImage("src/main/java/recruitmentDay4/towerDefence/assets/cursors/Arrow_blue.png");
-        image = image.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
-//
+        Image image = toolkit.getImage("src/towerDefence/assets/cursors/Arrow_blue.png");
+        image = image.getScaledInstance(Config.cursorWidth, Config.cursorHeight, Image.SCALE_SMOOTH);
+
         Cursor c = toolkit.createCustomCursor(image , new Point(swingControl.getX(), swingControl.getY()-20), "img");
         swingControl.setCursor (c);
-
-//        swingControl.setCursor(cursor);
 
         swingControl.addMouseListener(swingControl);
     }
@@ -78,24 +75,31 @@ public class SwingControl extends JFrame implements MouseListener {
      * @throws IOException for the image reading (file not found)
      */
     public static void init() throws IOException {
+        initImages();
+        initializeJFrame();
+        initializeJPanel();
+
+        swingControl.setSize(Config.width*40 + 5, Config.height*40 + 32);
+    }
+
+    private static void initImages() throws IOException {
         imgSand = ImageIO.read(new File("src/towerDefence/assets/tiles/sand_tile.png"));
         imgGrass = ImageIO.read(new File("src/towerDefence/assets/tiles/grass_tile_3.png"));
+        imgDarkGrass = ImageIO.read(new File("src/towerDefence/assets/tiles/grass_tile_2.png"));
+        imgWater = ImageIO.read(new File("src/towerDefence/assets/tiles/0.png"));
+
+        imgPlacer = ImageIO.read(new File("src/towerDefence/assets/tiles/placer.png"));
+        imgPlacerOverlay = ImageIO.read(new File("src/towerDefence/assets/tiles/buildOverlay.png"));
+
         imgBush = ImageIO.read(new File("src/towerDefence/assets/objects/smallBush.png"));
         imgEnemy1 = ImageIO.read(new File("src/towerDefence/assets/characters/soldier1.png"));
         imgEnemy2 = ImageIO.read(new File("src/towerDefence/assets/characters/woodenEnemy.png"));
         imgEnemy3 = ImageIO.read(new File("src/towerDefence/assets/characters/terminator.png"));
         imgEnemy4 = ImageIO.read(new File("src/towerDefence/assets/characters/megaKnight.png"));
-        imgDarkGrass = ImageIO.read(new File("src/towerDefence/assets/tiles/grass_tile_2.png"));
-        imgWater = ImageIO.read(new File("src/towerDefence/assets/tiles/0.png"));
-        imgTowerRed = ImageIO.read(new File("src/towerDefence/assets/towers/turretRed.png"));
-        imgTowerGreen = ImageIO.read(new File("src/towerDefence/assets/towers/turretGreen.png"));
-        imgPlacer = ImageIO.read(new File("src/towerDefence/assets/tiles/placer.png"));
-        imgPlacerOverlay = ImageIO.read(new File("src/towerDefence/assets/tiles/buildOverlay.png"));
-        imgTowerBase = ImageIO.read(new File("src/towerDefence/assets/towers/base.png"));
-        initializeJFrame();
-        initializeJPanel();
 
-        swingControl.setSize(Config.width*40 + 5, Config.height*40 + 32);
+        imgTowerBase = ImageIO.read(new File("src/towerDefence/assets/towers/base.png"));
+        imgTowerGreen = ImageIO.read(new File("src/towerDefence/assets/towers/turretGreen.png"));
+        imgTowerRed = ImageIO.read(new File("src/towerDefence/assets/towers/turretRed.png"));
     }
 
     /**
@@ -163,11 +167,11 @@ public class SwingControl extends JFrame implements MouseListener {
             }
             ArrayList<Enemy> ens = Board.getEnemies(); //solve races
             for(Enemy en : ens){
-                g.drawRect(en.getX()*40 + 10, en.getY()*40 + 2, 20, 5);
+                g.drawRect(en.getX()*40 + 10, en.getY()*40 + 2, 20, Config.healthBarSizeHeight);
                 double health = en.getHealth();
                 g.setColor(Color.green);
                 if(health <= 30) g.setColor(Color.red);
-                g.fillRect(en.getX()*40 + 10, en.getY()*40 + 2, (int)(20 * (health/en.getLevel().getHealth())), 5);
+                g.fillRect(en.getX()*40 + 10, en.getY()*40 + 2, (int)(Config.healthBarSizeWidth * (health/en.getLevel().getHealth())), Config.healthBarSizeHeight);
                 g.setColor(Color.black);
                 Image enImg;
                 if(en.getLevel() == Enemy.type.BASIC) enImg = imgEnemy1;
@@ -196,10 +200,11 @@ public class SwingControl extends JFrame implements MouseListener {
 
                 g.drawImage(d, t.getX()*40, t.getY()*40, 40, 40, null);
             }
+
             g.setColor(Color.white);
-            g.setFont(Font.getFont("Comic Sans"));
-            g.drawString("$"+DifficultyLevelController.getMoneys() + "", 380, 20);
-            g.drawString("Level "+DifficultyLevelController.getLevel() + "", 20, 20);
+            g.setFont(Font.getFont(Config.font));
+            g.drawString("$"+DifficultyLevelController.getMoneys() + "", Config.moneyLocationX, Config.hudY);
+            g.drawString("Level "+DifficultyLevelController.getLevel() + "", Config.levelLocationX, Config.hudY);
             g.setColor(Color.black);
 
             timer.start();

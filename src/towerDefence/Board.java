@@ -42,8 +42,7 @@ public class Board {
             return;
         }
         board = new Tile[height][width];
-        drawPath(false);
-//        drawPath(true);
+        drawPath(Config.straightPath);
     }
 
     /**

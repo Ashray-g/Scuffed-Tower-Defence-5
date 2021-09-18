@@ -15,10 +15,10 @@ public class TowerCore {
 
         for(Enemy e : ens){
             if(e.getHealth() <= 0){
-                if(e.getLevel() == Enemy.type.BASIC) DifficultyLevelController.changeMoneys(50);
-                else if(e.getLevel() == Enemy.type.WOODEN) DifficultyLevelController.changeMoneys(100);
-                else if(e.getLevel() == Enemy.type.TERMINATOR) DifficultyLevelController.changeMoneys(150);
-                else if(e.getLevel() == Enemy.type.MEGA) DifficultyLevelController.changeMoneys(1000);
+                if(e.getLevel() == Enemy.type.BASIC) DifficultyLevelController.changeMoneys(Config.earningTrooper);
+                else if(e.getLevel() == Enemy.type.WOODEN) DifficultyLevelController.changeMoneys(Config.earningWooden);
+                else if(e.getLevel() == Enemy.type.TERMINATOR) DifficultyLevelController.changeMoneys(Config.earningTerminator);
+                else if(e.getLevel() == Enemy.type.MEGA) DifficultyLevelController.changeMoneys(Config.earningMega);
                 remove.add(e);
             }
             e.setPos(e.getPos()+1);
@@ -46,9 +46,9 @@ public class TowerCore {
         Enemy.type t= Enemy.type.BASIC;
         int rand = (int)(Math.random() * 50) + 1;
         System.out.println(DifficultyLevelController.getLevel());
-        if(rand < (int)(DifficultyLevelController.getLevel() * 0.1) && DifficultyLevelController.getLevel() > 30) t = Enemy.type.MEGA;
-        else if (rand < DifficultyLevelController.getLevel()*0.5 && DifficultyLevelController.getLevel()  > 10) t = Enemy.type.TERMINATOR;
-        else if(rand < DifficultyLevelController.getLevel() * 2) t = Enemy.type.WOODEN;
+        if(rand < (int)(DifficultyLevelController.getLevel() * Config.megaConstant) && DifficultyLevelController.getLevel() > Config.minLevelMega) t = Enemy.type.MEGA;
+        else if (rand < DifficultyLevelController.getLevel()*Config.terminatorConstant && DifficultyLevelController.getLevel()  > Config.minLevelTerminator) t = Enemy.type.TERMINATOR;
+        else if(rand < DifficultyLevelController.getLevel() * Config.woodenConstant) t = Enemy.type.WOODEN;
         Enemy en = new Enemy(-1, 5, t);
         System.out.println(en.getLevel());
         en.setPos(-1);
@@ -65,28 +65,28 @@ public class TowerCore {
         }
 
         if(Board.getBoard()[y][x].getTowerLevel() == 2){
-            if(DifficultyLevelController.getMoneys() >= 1200){
+            if(DifficultyLevelController.getMoneys() >= Config.cost3){
                 Board.getBoard()[y][x].setTowerLevel(Board.getBoard()[y][x].getTowerLevel() + 1);
-                DifficultyLevelController.changeMoneys(-1200);
+                DifficultyLevelController.changeMoneys(-Config.cost3);
             }
             return;
         }
 
         if(Board.getBoard()[y][x].getTowerLevel() == 1){
-            if(DifficultyLevelController.getMoneys() >= 500){
+            if(DifficultyLevelController.getMoneys() >= Config.cost2){
                 Board.getBoard()[y][x].setTowerLevel(Board.getBoard()[y][x].getTowerLevel() + 1);
-                DifficultyLevelController.changeMoneys(-500);
+                DifficultyLevelController.changeMoneys(-Config.cost2);
             }
             return;
         }
 
-        if(DifficultyLevelController.getMoneys() >= 300) {
+        if(DifficultyLevelController.getMoneys() >= Config.cost1) {
             Board.getBoard()[y][x] = new TowerTile(Tile.State.DARK_GRASS);
             Board.getBoard()[y][x].setX(x);
             Board.getBoard()[y][x].setY(y);
             Board.getBoard()[y][x].setTowerLevel(1);
             Board.getTowers().add((TowerTile) Board.getBoard()[y][x]);
-            DifficultyLevelController.changeMoneys(-300);
+            DifficultyLevelController.changeMoneys(-Config.cost1);
         }
 
     }

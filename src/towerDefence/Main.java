@@ -13,7 +13,7 @@ public class Main {
         init();
 
         while(true){
-            Thread.sleep(600);
+            Thread.sleep(Config.towerAndEnemyUpdateTimeMillis);
             TowerCore.updateEnemyPosition();
             TowerCore.updateTowerRotation();
             System.out.println("Money: " + DifficultyLevelController.getMoneys());
@@ -26,7 +26,7 @@ public class Main {
         SwingControl.init();
 
         final ScheduledExecutorService[] ses = {Executors.newScheduledThreadPool(1)};
-        ses[0].scheduleAtFixedRate(Main::spawn, 2500, 2500, TimeUnit.MILLISECONDS);
+        ses[0].scheduleAtFixedRate(Main::spawn, Config.initSpawnTimeMillis, Config.initSpawnTimeMillis, TimeUnit.MILLISECONDS);
 
 
         Timer timer2 = new Timer();
@@ -36,11 +36,12 @@ public class Main {
                 DifficultyLevelController.setLevel(DifficultyLevelController.getLevel() + 1);
                 ses[0].shutdown();
                 ses[0] = Executors.newScheduledThreadPool(1);;
-                ses[0].scheduleAtFixedRate(Main::spawn, Math.max(2500 - DifficultyLevelController.getLevel() * 50, 700), Math.max(2500 - DifficultyLevelController.getLevel() * 50, 700), TimeUnit.MILLISECONDS);
+                ses[0].scheduleAtFixedRate(Main::spawn, Math.max(Config.initSpawnTimeMillis - DifficultyLevelController.getLevel() * Config.speedDecreaseTimeMillis, 700),
+                        Math.max(Config.initSpawnTimeMillis - DifficultyLevelController.getLevel() * Config.speedDecreaseTimeMillis, 700), TimeUnit.MILLISECONDS);
             }
         };
 
-        timer2.schedule(myTask2, 7000, 7000);
+        timer2.schedule(myTask2, Config.levelTimeMillis, Config.levelTimeMillis);
     }
 
     public static void spawn(){

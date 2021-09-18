@@ -49,7 +49,7 @@ public class algorithms {
                 if(newX >= 0 && newY >= 0 && newX < path[0].length && newY < path.length){
                     if(vis[newY][newX] == null){
                         dist[newY][newX] = dist[cur.y][cur.x] + 1;
-                        if(dist[newY][newX] < path.length * 7){
+                        if(dist[newY][newX] < path.length * Config.maxPath){
                             vis[newY][newX] = new Point(cur.x, cur.y);
                             st.push(new Point(newX, newY));
                         }
@@ -69,15 +69,7 @@ public class algorithms {
 
             if(cur == null || cur.x==-1) break;
         }
-        if(len < path[0].length*2.5) path = dfs(new int[path.length][path[0].length]);
-
-//        for(int i = 0;i<path.length;i++){
-//            for(int j = 0;j<path[0].length;j++){
-//                System.out.print((path[i][j]==1?"■":"□") + " ");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println();
+        if(len < path[0].length*Config.minPath) path = dfs(new int[path.length][path[0].length]);
 
         return path;
     }

@@ -7,7 +7,10 @@ public class Enemy {
     private type level;
 
     public enum type{
-        BASIC (100), WOODEN (150), TERMINATOR (600), MEGA (3000);
+        BASIC (Config.trooperHealth),
+        WOODEN (Config.woodenHealth),
+        TERMINATOR (Config.terminatorHealth),
+        MEGA (Config.megaHealth);
 
         private final int health;
         type(int health) {
