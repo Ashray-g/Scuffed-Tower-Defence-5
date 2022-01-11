@@ -32,6 +32,7 @@ public class SwingControl extends JFrame implements MouseListener {
     public static Image imgTowerRed;
     public static Image imgTowerGreen;
     public static Image imgTowerBase;
+    public static Image imgTowerRocket;
     public static Image imgPlacer;
     public static Image imgPlacerOverlay;
 
@@ -82,6 +83,10 @@ public class SwingControl extends JFrame implements MouseListener {
         swingControl.setSize(Config.width*40 + 5, Config.height*40 + 32);
     }
 
+    /**
+     * Loads in all the images from the assets folder to java.awt Image objects
+     * @throws IOException file not found
+     */
     private static void initImages() throws IOException {
         imgSand = ImageIO.read(new File("src/towerDefence/assets/tiles/sand_tile.png"));
         imgGrass = ImageIO.read(new File("src/towerDefence/assets/tiles/grass_tile_3.png"));
@@ -100,6 +105,7 @@ public class SwingControl extends JFrame implements MouseListener {
         imgTowerBase = ImageIO.read(new File("src/towerDefence/assets/towers/base.png"));
         imgTowerGreen = ImageIO.read(new File("src/towerDefence/assets/towers/turretGreen.png"));
         imgTowerRed = ImageIO.read(new File("src/towerDefence/assets/towers/turretRed.png"));
+        imgTowerRocket = ImageIO.read(new File("src/towerDefence/assets/towers/rocketTower.png"));
     }
 
     /**
@@ -192,8 +198,8 @@ public class SwingControl extends JFrame implements MouseListener {
                 else d= new BufferedImage(imgTowerGreen.getWidth(null), imgTowerGreen.getHeight(null), BufferedImage.TYPE_INT_ARGB);
                 Graphics2D gr = d.createGraphics();
 
-
-                if(t.getTowerLevel() >= 2) gr.drawImage(imgTowerRed, 0, 0, null);
+                if(t.getTowerLevel() == 4) gr.drawImage(imgTowerRocket, 0, 0, null);
+                else if(t.getTowerLevel() == 2 || t.getTowerLevel() == 3) gr.drawImage(imgTowerRed, 0, 0, null);
                 else if(t.getTowerLevel() == 1) gr.drawImage(imgTowerGreen, 0, 0, null);
 
                 d = rotateImageByDegrees(d, t.rotationRad);
@@ -202,7 +208,7 @@ public class SwingControl extends JFrame implements MouseListener {
             }
 
             g.setColor(Color.white);
-            g.setFont(Font.getFont(Config.font));
+            g.setFont(Config.font);
             g.drawString("$"+DifficultyLevelController.getMoneys() + "", Config.moneyLocationX, Config.hudY);
             g.drawString("Level "+DifficultyLevelController.getLevel() + "", Config.levelLocationX, Config.hudY);
             g.setColor(Color.black);

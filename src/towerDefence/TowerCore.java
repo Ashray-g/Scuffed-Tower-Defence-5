@@ -56,11 +56,19 @@ public class TowerCore {
     }
 
     public static void spawnTower(int x, int y){
-        if(Board.getBoard()[y][x].getTowerLevel() == 3){
+        if(Board.getBoard()[y][x].getTowerLevel() == 4){
             return;
         }
 
         if(Board.getBoard()[y][x].getSt() == Tile.State.SAND){
+            return;
+        }
+
+        if(Board.getBoard()[y][x].getTowerLevel() == 3){
+            if(DifficultyLevelController.getMoneys() >= Config.cost4){
+                Board.getBoard()[y][x].setTowerLevel(Board.getBoard()[y][x].getTowerLevel() + 1);
+                DifficultyLevelController.changeMoneys(-Config.cost4);
+            }
             return;
         }
 
@@ -113,6 +121,7 @@ public class TowerCore {
                                 if(t.getTowerLevel() == 1) bt.number1().setHealth(bt.number1().getHealth() - Config.damageLevel1);
                                 if(t.getTowerLevel() == 2) bt.number1().setHealth(bt.number1().getHealth() - Config.damageLevel2);
                                 if(t.getTowerLevel() == 3) bt.number1().setHealth(bt.number1().getHealth() - Config.damageLevel3);
+                                if(t.getTowerLevel() == 4) bt.number1().setHealth(bt.number1().getHealth() - Config.damageLevel4);
                                 break;
                             }
                         }
