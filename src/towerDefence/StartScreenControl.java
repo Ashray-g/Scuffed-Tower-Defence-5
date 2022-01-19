@@ -16,8 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class SwingControl extends JFrame implements MouseListener {
-    private static SwingControl swingControl = new SwingControl();
+public class StartScreenControl extends JFrame implements MouseListener {
+
+    private static StartScreenControl startScreen = new StartScreenControl();
     private static JPanel panel;
 
     public static Image imgSand;
@@ -35,30 +36,35 @@ public class SwingControl extends JFrame implements MouseListener {
     public static Image imgTowerRocket;
     public static Image imgPlacer;
     public static Image imgPlacerOverlay;
-    public static Image imgGameOver;
+    public static Image imgStartButton;
+    public static boolean startButtonClicked;
+
+    public StartScreenControl() {
+        startButtonClicked = false;
+    }
 
     /**
      * Initializes the JFrame with the values from the Config file
      * Adds the Mouse Listener to JFrame
      */
     private static void initializeJFrame(){
-        swingControl = new SwingControl();
-        swingControl.setSize(Config.width*40, Config.height*40);
-        swingControl.setVisible(true);
+        startScreen = new StartScreenControl();
+        startScreen.setSize(Config.width*40, Config.height*40);
+        startScreen.setVisible(true);
 
-        swingControl.setName(Config.gameName);
-        swingControl.setTitle(Config.gameName);
+        startScreen.setName(Config.gameName);
+        startScreen.setTitle(Config.gameName);
 
-        swingControl.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        startScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Image image = toolkit.getImage("src/towerDefence/assets/cursors/Arrow_blue.png");
         image = image.getScaledInstance(Config.cursorWidth, Config.cursorHeight, Image.SCALE_SMOOTH);
 
         Cursor c = toolkit.createCustomCursor(image , new Point(0,0), "img");
-        swingControl.setCursor (c);
+        startScreen.setCursor (c);
 
-        swingControl.addMouseListener(swingControl);
+        startScreen.addMouseListener(startScreen);
     }
 
     /**
@@ -67,8 +73,8 @@ public class SwingControl extends JFrame implements MouseListener {
     private static void initializeJPanel(){
         panel = new MyPanel();
 
-        swingControl.add(panel);
-        swingControl.pack();
+        startScreen.add(panel);
+        startScreen.pack();
     }
 
     /**
@@ -82,7 +88,7 @@ public class SwingControl extends JFrame implements MouseListener {
         initializeJFrame();
         initializeJPanel();
 
-        swingControl.setSize(Config.width*40 + 5, Config.height*40 + 32);
+        startScreen.setSize(Config.width*40 + 5, Config.height*40 + 32);
     }
 
     /**
@@ -109,7 +115,7 @@ public class SwingControl extends JFrame implements MouseListener {
         imgTowerRed = ImageIO.read(new File("src/towerDefence/assets/towers/turretRed.png"));
         imgTowerRocket = ImageIO.read(new File("src/towerDefence/assets/towers/rocketTower.png"));
 
-        imgGameOver = ImageIO.read(new File("src/towerDefence/assets/nonGame/gameOver.png"));
+        imgStartButton = ImageIO.read(new File("src/towerDefence/assets/nonGame/startscreen.png"));
     }
 
     /**
@@ -117,9 +123,13 @@ public class SwingControl extends JFrame implements MouseListener {
      */
     @Override
     public void mousePressed(MouseEvent e) {
-        int tileX = e.getX()/40;
-        int tileY = (e.getY() - 30)/40;
-        TowerCore.spawnTower(tileX, tileY);
+        int x = e.getX();
+        int y = (e.getY() - 30);
+        if (x >= 98*Config.width/11 && x <= 238*Config.width/11 + 98*Config.width/11 && y >= 252*Config.height/11 && y <= 129*Config.height/11 + 252*Config.height/11){
+            startButtonClicked = true;
+            setVisible(false);
+            dispose();
+        }
     }
 
     @Override
@@ -148,15 +158,10 @@ public class SwingControl extends JFrame implements MouseListener {
          * - read the Board class's tower list and draw those with their respective rotations
          */
         public void paint(Graphics g) {
-            if (Main.endGame > 1)
-            {
-                g.drawImage(imgGameOver, -Config.width * 20, -Config.width * 20, Config.width * 80, Config.width * 80, null);
-                return;
-            }
             for(int i = 0; i< Config.height; i++){
                 for(int j = 0; j< Config.width; j++){
                     Image img;
-                    Tile f = Board.getBoard()[i][j];
+                    Tile f = StartBoard.getStartBoard()[i][j];
                     if(f.getSt().equals(BackgroundTile.State.GRASS)){
                         img = imgGrass;
                     }else if (f.getSt().equals(BackgroundTile.State.SAND)){
@@ -166,7 +171,7 @@ public class SwingControl extends JFrame implements MouseListener {
                     }else{
                         img = imgWater;
                     }
-                    ArrayList<BackgroundTile> bt = Board.neighbors(j, i, Config.width, Config.height);
+                    ArrayList<BackgroundTile> bt = StartBoard.startNeighbors(j, i, Config.width, Config.height);
                     boolean d = false;
                     for(BackgroundTile p : bt){
                         if(p.getState()== Tile.State.SAND){
@@ -178,7 +183,7 @@ public class SwingControl extends JFrame implements MouseListener {
                     if(d && (img == imgGrass || imgDarkGrass == img)) g.drawImage(imgPlacerOverlay, j*40, i*40, 40, 40, null);
                 }
             }
-            ArrayList<Enemy> ens = Board.getEnemies(); //solve races
+            ArrayList<Enemy> ens = StartBoard.getStartEnemies(); //solve races
             for(Enemy en : ens){
                 g.drawRect(en.getX()*40 + 10, en.getY()*40 + 2, 20, Config.healthBarSizeHeight);
                 double health = en.getHealth();
@@ -193,7 +198,8 @@ public class SwingControl extends JFrame implements MouseListener {
                 else enImg = imgEnemy4;
                 g.drawImage(enImg, en.getX()*40, en.getY()*40, 40, 40, null);
             }
-            for(TowerTile t : Board.getTowers()){
+            g.drawImage(imgStartButton, 98*Config.width/11, 252*Config.height/11, 238*Config.width/11, 129*Config.height/11, null);
+            for(TowerTile t : StartBoard.getStartTowers()){
                 if(t.getTowerLevel() == 3) g.drawImage(imgTowerBase, t.getX()*40, t.getY()*40, 40, 40, null);
                 BufferedImage d;
                 if(t.getTowerLevel() == 2){
@@ -213,12 +219,6 @@ public class SwingControl extends JFrame implements MouseListener {
 
                 g.drawImage(d, t.getX()*40, t.getY()*40, 40, 40, null);
             }
-
-            g.setColor(Color.white);
-            g.setFont(Config.font);
-            g.drawString("$"+DifficultyLevelController.getMoneys() + "     HP: " +  Config.health, Config.moneyLocationX, Config.hudY);
-            g.drawString("Level "+DifficultyLevelController.getLevel() + "", Config.levelLocationX, Config.hudY);
-            g.setColor(Color.black);
 
             timer.start();
         }
@@ -258,9 +258,5 @@ public class SwingControl extends JFrame implements MouseListener {
             return newImage;
         }
 
-    }
-    public static SwingControl getJFrame()
-    {
-        return swingControl;
     }
 }

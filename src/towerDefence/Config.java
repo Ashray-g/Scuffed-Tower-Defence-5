@@ -3,10 +3,11 @@ package towerDefence;
 import java.awt.*;
 
 public class Config {
-    public static int width = 11;
-    public static int height = 11;
+    public static int width = 13;
+    public static int height = 13;
 
-    public static double health = 100;
+    public static int health;
+    public static int healthConstant = health = 100;
 
     public static double damageLevel1 = 15;
     public static double damageLevel2 = 25;
@@ -15,9 +16,12 @@ public class Config {
 
     public static int initMoney = 1000;
 
-    public static boolean straightPath = false;
+    public static int startLevel = 1;
 
-    public static double minPath = 3;
+    public static boolean straightPath = true;
+    public static boolean startScreenStraightPath = true;
+
+    public static double minPath = 5;
     public static double maxPath = 7;
 
     public static int trooperHealth = 100;
@@ -59,8 +63,8 @@ public class Config {
 
     public static int towerAndEnemyUpdateTimeMillis = 600;
     public static int initSpawnTimeMillis = 2500;
+    public static int initStartSpawnTimeMillis = 1200;
     public static int levelTimeMillis = 7000;
     public static int speedDecreaseTimeMillis = 50;
-
 
 }

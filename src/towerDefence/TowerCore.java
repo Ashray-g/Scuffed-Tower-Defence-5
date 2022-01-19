@@ -24,6 +24,10 @@ public class TowerCore {
             e.setPos(e.getPos()+1);
             if(Board.getPath().size() == e.getPos()){
                 remove.add(e);
+                if(e.getLevel() == Enemy.type.BASIC) Config.health --;
+                else if(e.getLevel() == Enemy.type.WOODEN) Config.health -= 2;
+                else if(e.getLevel() == Enemy.type.TERMINATOR) Config.health -= 5;
+                else if(e.getLevel() == Enemy.type.MEGA) Config.health -= 10;
             }else{
                 if(e.getX() >= 0){
                     Board.getBoard()[e.getY()][e.getX()].setHasEnemy(false);
@@ -40,17 +44,20 @@ public class TowerCore {
                 Board.getEnemies().remove(en);
             }
         }
+        if (Config.health <= 0)
+        {
+            Config.health = 0;
+            Main.endGame++;
+        }
     }
 
     public static void spawnEnemy(){
         Enemy.type t= Enemy.type.BASIC;
         int rand = (int)(Math.random() * 50) + 1;
-        System.out.println(DifficultyLevelController.getLevel());
         if(rand < (int)(DifficultyLevelController.getLevel() * Config.megaConstant) && DifficultyLevelController.getLevel() > Config.minLevelMega) t = Enemy.type.MEGA;
         else if (rand < DifficultyLevelController.getLevel()*Config.terminatorConstant && DifficultyLevelController.getLevel()  > Config.minLevelTerminator) t = Enemy.type.TERMINATOR;
         else if(rand < DifficultyLevelController.getLevel() * Config.woodenConstant) t = Enemy.type.WOODEN;
         Enemy en = new Enemy(-1, 5, t);
-        System.out.println(en.getLevel());
         en.setPos(-1);
         Board.getEnemies().add(en);
     }

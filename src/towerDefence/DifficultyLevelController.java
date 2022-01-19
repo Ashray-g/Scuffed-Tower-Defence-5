@@ -13,6 +13,10 @@ public class DifficultyLevelController {
         DifficultyLevelController.moneys += moneys;
     }
 
+    public static void resetMoney() {
+        DifficultyLevelController.moneys = Config.initMoney;
+    }
+
     public static int getLevel() {
         return level;
     }

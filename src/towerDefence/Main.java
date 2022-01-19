@@ -9,42 +9,88 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
+    static ScheduledExecutorService[] ses;
+    static int endGame;
+    static Timer timer2;
+    static TimerTask myTask2;
     public static void main(String[] args) throws IOException, InterruptedException {
-        init();
+        while(true) {
 
-        while(true){
-            Thread.sleep(Config.towerAndEnemyUpdateTimeMillis);
-            TowerCore.updateEnemyPosition();
-            TowerCore.updateTowerRotation();
-            System.out.println("Money: " + DifficultyLevelController.getMoneys());
+            initialize();
+
+            initStart();
+            initStartTowers();
+
+            while (true) {
+                Thread.sleep(Config.towerAndEnemyUpdateTimeMillis);
+                StartScreenTowerCore.updateStartScreenEnemyPosition();
+                StartScreenTowerCore.updateStartScreenTowerRotation();
+                if (StartScreenControl.startButtonClicked) {
+                    break;
+                }
+            }
+            ses[0].shutdown();
+
+            initGame();
+            while (true) {
+                Thread.sleep(Config.towerAndEnemyUpdateTimeMillis);
+                TowerCore.updateEnemyPosition();
+                TowerCore.updateTowerRotation();
+                if (endGame > 1) break;
+            }
+            ses[0].shutdown();
+            TimeUnit.SECONDS.sleep(5);
+            SwingControl.getJFrame().setVisible(false);
+            SwingControl.getJFrame().dispose();
+            ses[0].shutdown();
+            timer2.cancel();
+            myTask2.cancel();
         }
-
     }
 
-    public static void init() throws IOException, InterruptedException {
+    public static void initialize()
+    {
+        Config.health = Config.healthConstant;
+        StartScreenControl.startButtonClicked = false;
+        endGame = 0;
+        Board.init();
+        StartBoard.init();
+        DifficultyLevelController.resetMoney();
+        DifficultyLevelController.setLevel(Config.startLevel);
+    }
+    public static void initStart() throws IOException{
+        StartBoard.initStartScreen(Config.width, Config.height);
+        StartScreenControl.init();
+
+        ses = new ScheduledExecutorService[]{Executors.newScheduledThreadPool(1)};
+        ses[0].scheduleAtFixedRate(Main::spawnStart, Config.initStartSpawnTimeMillis, Config.initStartSpawnTimeMillis, TimeUnit.MILLISECONDS);
+    }
+
+    public static void initGame() throws IOException, InterruptedException {
         Board.init(Config.width, Config.height);
         SwingControl.init();
 
-        final ScheduledExecutorService[] ses = {Executors.newScheduledThreadPool(1)};
-        ses[0].scheduleAtFixedRate(Main::spawn, Config.initSpawnTimeMillis, Config.initSpawnTimeMillis, TimeUnit.MILLISECONDS);
+        ses = new ScheduledExecutorService[]{Executors.newScheduledThreadPool(1)};
+        ses[0].scheduleAtFixedRate(Main::spawnInGame, Config.initSpawnTimeMillis, Config.initSpawnTimeMillis, TimeUnit.MILLISECONDS);
 
 
-        Timer timer2 = new Timer();
-        TimerTask myTask2 = new TimerTask() {
+        timer2 = new Timer();
+        myTask2 = new TimerTask() {
             @Override
             public void run() {
                 DifficultyLevelController.setLevel(DifficultyLevelController.getLevel() + 1);
                 ses[0].shutdown();
                 ses[0] = Executors.newScheduledThreadPool(1);;
-                ses[0].scheduleAtFixedRate(Main::spawn, Math.max(Config.initSpawnTimeMillis - DifficultyLevelController.getLevel() * Config.speedDecreaseTimeMillis, 700),
+                ses[0].scheduleAtFixedRate(Main::spawnInGame, Math.max(Config.initSpawnTimeMillis - DifficultyLevelController.getLevel() * Config.speedDecreaseTimeMillis, 700),
                         Math.max(Config.initSpawnTimeMillis - DifficultyLevelController.getLevel() * Config.speedDecreaseTimeMillis, 700), TimeUnit.MILLISECONDS);
             }
         };
-
         timer2.schedule(myTask2, Config.levelTimeMillis, Config.levelTimeMillis);
     }
-
-    public static void spawn(){
-        TowerCore.spawnEnemy();
+    public static void initStartTowers(){
+        StartScreenTowerCore.initStartTower();
     }
+
+    public static void spawnStart(){ StartScreenTowerCore.spawnStartScreenEnemy(); }
+    public static void spawnInGame(){ TowerCore.spawnEnemy(); }
 }

@@ -14,6 +14,12 @@ public class Board {
     private static ArrayList<BackgroundTile> path = new ArrayList<>();
     private static ArrayList<Enemy> enemies = new ArrayList<>();
 
+    public static void init() {
+        towers = new ArrayList<>();
+        path = new ArrayList<>();
+        enemies = new ArrayList<>();
+        board = new Tile[Config.width][Config.height];
+    }
     public static ArrayList<Enemy> getEnemies() {
         return enemies;
     }
@@ -73,7 +79,7 @@ public class Board {
         }else{
             //TODO: Add DFS or A* path generation with random factor (seed)
 //            proceduralGenerationTest(Config.width, Config.height);
-            int[][] path = new int[11][11];
+            int[][] path = new int[Config.height][Config.width];
             path = algorithms.dfs(path);
             for(int i = 0;i<path.length;i++){
                 for(int j = 0;j<path[0].length;j++){
